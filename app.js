@@ -12,7 +12,7 @@ var Message = require('azure-iot-device').Message;
 
 try{
     // reports metadata properties about this device
-    await reportDeviceDetails()     
+    await reportDeviceDetails()
 }
 catch(error){
     console.log(`${Date.now()} error reporting device details ${error}`);
@@ -67,7 +67,7 @@ async function runApp() {
         }
 
         await client.close();
-        
+
         const timeoutMs = 1000 * 60 * 5; // 5 minutes
             await new Promise(resolve => setTimeout(resolve, timeoutMs));
         }
