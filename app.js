@@ -19,7 +19,7 @@ async function runApp() {
         console.log(`${Date.now()} error reporting device details ${error}`);
         exit();
     }
-    
+
     while (true){
         // MQTT client object from connection string. Connection string
         // is used to authenticate to Azure IoT hub
@@ -123,13 +123,10 @@ async function reportDeviceDetails() {
                 console.log('reportDeviceDetails twin update error', err);
             }
 
-            twin.close(()=>{
-                console.log('reportDeviceDetails called close on twin', err);
-                client.close(()=>{
-                    // resolve the promise either way to keep the app goin
-                    console.log('reportDeviceDetails called close on client', err);
-                    resolve();
-                });
+            client.close(()=>{
+                // resolve the promise either way to keep the app goin
+                console.log('reportDeviceDetails called close on client', err);
+                resolve();
             });
         });
     });
