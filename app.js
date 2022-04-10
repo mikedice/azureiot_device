@@ -1,47 +1,49 @@
+const { exit } = require('process');
+
 const fsPromises = require('fs').promises;
 const execFile = require('child_process').execFile;
 
 // Use factory function from MQTT package to create an MQTT client
 var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
 
-// MQTT client object from connection string. Connection string
-// is used to authenticate to Azure IoT hub
-var client = clientFromConnectionString(process.env.HubConnectionString);
 
 // Send an Azure IoT Message object
 var Message = require('azure-iot-device').Message;
 
+try{
+    // reports metadata properties about this device
+    await reportDeviceDetails()     
+}
+catch(error){
+    console.log(`${Date.now()} error reporting device details ${error}`);
+    exit();
+}
+
 async function runApp() {
-    // Open a client connection
-    try{
-        await client.open();
-    }
-    catch(error){
-        console.log(`${Date.now()} error opening MQTT client ${error}`);
-	return;
-    }
-
-    try{
-         // reports metadata properties about this device
-          await reportDeviceDetails(client)     
-    }
-    catch(error){
-        console.log(`${Date.now()} error reporting device details ${error}`);
-        return;
-    }
-
-
     while (true){
+        // MQTT client object from connection string. Connection string
+        // is used to authenticate to Azure IoT hub
+        var client = clientFromConnectionString(process.env.HubConnectionString);
+
+        // Open a client connection
+        try{
+            await client.open();
+        }
+        catch(error){
+            console.log(`${Date.now()} error opening MQTT client ${error}`);
+            return;
+        }
+
         var sensors = null;
 
-	// read sensor data
-	try{
+        // read sensor data
+        try{
             sensors = await readSensors();
-	    console.log(`${Date.now()} success reading sensor data`);
-	}
-	catch(error){
-	    console.log(`${Date.now()} error reading sensors ${error}`);
-	}
+            console.log(`${Date.now()} success reading sensor data`);
+        }
+        catch(error){
+            console.log(`${Date.now()} error reading sensors ${error}`);
+        }
 
         if (sensors){
             var body = {
@@ -54,19 +56,21 @@ async function runApp() {
             message.contentEncoding = 'utf-8';
             message.contentType = 'application/json';
 
-	    try
-	    {
-	        result = await client.sendEvent(message);
-	        console.log(`${Date.now()} sent message to hub`);
+            try
+            {
+                result = await client.sendEvent(message);
+                console.log(`${Date.now()} sent message to hub`);
             }
-	    catch(error){
-                console.log(`${Date.now()} error sending message ${error}`);
-	    }
-	}
-	
-	const timeoutMs = 1000 * 60 * 5; // 5 minutes
-        await new Promise(resolve => setTimeout(resolve, timeoutMs));
-    }
+            catch(error){
+                    console.log(`${Date.now()} error sending message ${error}`);
+            }
+        }
+
+        await client.close();
+        
+        const timeoutMs = 1000 * 60 * 5; // 5 minutes
+            await new Promise(resolve => setTimeout(resolve, timeoutMs));
+        }
 }
 
 // Create an instance of a Python process that will
@@ -89,24 +93,46 @@ function readSensors() {
     return promise;
 }
 
-async function reportDeviceDetails(client) {
+async function reportDeviceDetails() {
+    // MQTT client object from connection string. Connection string
+    // is used to authenticate to Azure IoT hub
+    var client = clientFromConnectionString(process.env.HubConnectionString);
+
+    // Open a client connection
+    try{
+        await client.open();
+        console.log(`reportDeviceDetails opened client`);
+    }
+    catch(error){
+        console.log(`${Date.now()} error opening MQTT client ${error}`);
+        return;
+    }
+
     var twin = await client.getTwin();
+    console.log(`reportDeviceDetails opened device twin`);
     const sysinfo = await getSystemInfo();
     var deviceDetails = {
         deviceDetails: sysinfo
     };
+    console.log(`reportDeviceDetails loaded system info`);
 
     return new Promise((resolve) => {
         twin.properties.reported.update(deviceDetails, (err) => {
+            console.log(`reportDeviceDetails tried to update twin`);
             if (err) {
-                console.log('twin update error', err);
+                console.log('reportDeviceDetails twin update error', err);
             }
 
-            // resolve the promise either way to keep the app going
-            resolve();
+            twin.close(()=>{
+                console.log('reportDeviceDetails called close on twin', err);
+                client.close(()=>{
+                    // resolve the promise either way to keep the app goin
+                    console.log('reportDeviceDetails called close on client', err);
+                    resolve();
+                });
+            });
         });
     });
-
 }
 
 // This Raspberry Pi specific function loads sysem information and reports
