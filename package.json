@@ -1,0 +1,16 @@
+{
+  "name": "azureiot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "azure-iot-device": "^1.17.6",
+    "azure-iot-device-amqp": "^1.13.6",
+    "azure-iot-device-mqtt": "^1.15.6"
+  }
+}

@@ -1,0 +1,13 @@
+[Unit]
+Description= iot service sends messages to azure iot hub /home/pi/code/js/azureiot_device
+After=network.target
+
+[Service]
+WorkingDirectory=/home/pi/code/js/azureiot_device
+ExecStart=/home/pi/code/js/azureiot_device/runlocal.sh
+Restart=always
+RestartSec=3
+User=pi
+
+[Install]
+WantedBy=multi-user.target
