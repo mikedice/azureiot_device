@@ -71,8 +71,10 @@ async function runApp() {
             console.log("runApp called Close on MQTT client");
         });
 
-        // const timeoutMs = 1000 * 60 * 5; // 5 minutes
-        const timeoutMs = 5000;
+        client = null; // re-open it next tme it is needed
+
+        const timeoutMs = 1000 * 60 * 5; // 5 minutes
+        // const timeoutMs = 5000;
         await new Promise(resolve => setTimeout(resolve, timeoutMs));
     }
 }
