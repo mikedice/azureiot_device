@@ -72,7 +72,7 @@ async function runApp() {
         });
 
         // const timeoutMs = 1000 * 60 * 5; // 5 minutes
-        const timeoutMs = 50000;
+        const timeoutMs = 5000;
         await new Promise(resolve => setTimeout(resolve, timeoutMs));
     }
 }
