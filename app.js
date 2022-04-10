@@ -10,16 +10,16 @@ var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConn
 // Send an Azure IoT Message object
 var Message = require('azure-iot-device').Message;
 
-try{
-    // reports metadata properties about this device
-    await reportDeviceDetails()
-}
-catch(error){
-    console.log(`${Date.now()} error reporting device details ${error}`);
-    exit();
-}
-
 async function runApp() {
+    try{
+        // reports metadata properties about this device
+        await reportDeviceDetails()
+    }
+    catch(error){
+        console.log(`${Date.now()} error reporting device details ${error}`);
+        exit();
+    }
+    
     while (true){
         // MQTT client object from connection string. Connection string
         // is used to authenticate to Azure IoT hub
