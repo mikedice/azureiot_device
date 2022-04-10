@@ -67,13 +67,14 @@ async function runApp() {
             }
         }
 
-        await client.close((details)=>{
-            console.log(details);
+        await client.close(()=>{
+            console.log("runApp called Close on MQTT client");
         });
 
-        const timeoutMs = 1000 * 60 * 5; // 5 minutes
-            await new Promise(resolve => setTimeout(resolve, timeoutMs));
-        }
+        // const timeoutMs = 1000 * 60 * 5; // 5 minutes
+        const timeoutMs = 50000;
+        await new Promise(resolve => setTimeout(resolve, timeoutMs));
+    }
 }
 
 // Create an instance of a Python process that will
