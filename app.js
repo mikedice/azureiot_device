@@ -28,9 +28,10 @@ async function runApp() {
         // Open a client connection
         try{
             await client.open();
+            console.log("runApp opened MQTT client");
         }
         catch(error){
-            console.log(`${Date.now()} error opening MQTT client ${error}`);
+            console.log(`runApp error opening MQTT client ${error}`);
             return;
         }
 
@@ -39,10 +40,10 @@ async function runApp() {
         // read sensor data
         try{
             sensors = await readSensors();
-            console.log(`${Date.now()} success reading sensor data`);
+            console.log(`runApp success reading sensor data`);
         }
         catch(error){
-            console.log(`${Date.now()} error reading sensors ${error}`);
+            console.log(`runApp error reading sensors ${error}`);
         }
 
         if (sensors){
@@ -59,14 +60,16 @@ async function runApp() {
             try
             {
                 result = await client.sendEvent(message);
-                console.log(`${Date.now()} sent message to hub`);
+                console.log(`runApp sent message to hub`);
             }
             catch(error){
                     console.log(`${Date.now()} error sending message ${error}`);
             }
         }
 
-        await client.close();
+        await client.close((details)=>{
+            console.log(details);
+        });
 
         const timeoutMs = 1000 * 60 * 5; // 5 minutes
             await new Promise(resolve => setTimeout(resolve, timeoutMs));
@@ -125,7 +128,7 @@ async function reportDeviceDetails() {
 
             client.close(()=>{
                 // resolve the promise either way to keep the app goin
-                console.log('reportDeviceDetails called close on client', err);
+                console.log('reportDeviceDetails called close on client');
                 resolve();
             });
         });
