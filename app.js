@@ -1,14 +1,12 @@
 const { exit } = require('process');
-
 const fsPromises = require('fs').promises;
 const execFile = require('child_process').execFile;
 
-// Use factory function from MQTT package to create an MQTT client
-var clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
-
-
 // Send an Azure IoT Message object
-var Message = require('azure-iot-device').Message;
+const Message = require('azure-iot-device').Message; 
+
+// Use factory function from MQTT package to create an MQTT client
+const clientFromConnectionString = require('azure-iot-device-mqtt').clientFromConnectionString;
 
 async function runApp() {
     try{
@@ -84,7 +82,7 @@ async function runApp() {
 // stdout. On promise completion the promise contains
 // the returned JSON or the error if one occurred.
 function readSensors() {
-    var promise = new Promise((resolve, reject) => {
+    var promise = new Promise((resolve) => {
 
         const pathToPython271 = '/usr/bin/python2.7'
         const pathToScript = '/home/pi/code/python/readbmp180/readbmp180.py'
@@ -188,6 +186,5 @@ async function clearDeviceDetails(client) {
 
 runApp()
     .finally(() => {
-        client.close();
         console.log('goodbye');
     });
